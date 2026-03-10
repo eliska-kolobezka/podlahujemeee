@@ -13,10 +13,10 @@ em { font-style: normal; }
    CSS VARIABLES
    ============================================================ */
 :root {
-  --color-brick:        #C0614A;
-  --color-brick-dark:   #a85240;
-  --color-brick-light:  rgba(192, 97, 74, 0.10);
-  --color-brick-glow:   rgba(192, 97, 74, 0.28);
+  --color-brick:        #3A7D44;
+  --color-brick-dark:   #2d6235;
+  --color-brick-light:  rgba(58, 125, 68, 0.10);
+  --color-brick-glow:   rgba(58, 125, 68, 0.28);
   --color-anthracite:   #2D2D2D;
   --color-grey:         #F4F4F4;
   --color-grey-mid:     #E2E2E2;
@@ -504,7 +504,7 @@ em { font-style: normal; }
   transition: background var(--transition), border-color var(--transition);
 }
 .step:hover .step__icon {
-  background: rgba(192, 97, 74, 0.20); border-color: var(--color-brick);
+  background: rgba(58, 125, 68, 0.20); border-color: var(--color-brick);
 }
 .step__title {
   font-family: var(--font-heading);

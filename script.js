@@ -74,43 +74,66 @@ document.querySelectorAll('.sluzby-grid, .usp-grid, .testimonials, .proces-steps
 });
 
 /* ============================================================
-   CONTACT FORM
+   CONTACT FORM — Formspree AJAX
    ============================================================ */
 const form = document.getElementById('contactForm');
 
 if (form) {
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
 
     const name  = document.getElementById('name').value.trim();
     const phone = document.getElementById('phone').value.trim();
+    const submitBtn = form.querySelector('button[type="submit"]');
 
-    // Basic validation
+    // ── Validace povinných polí ──
     let valid = true;
-
     [document.getElementById('name'), document.getElementById('phone')].forEach(input => {
       if (!input.value.trim()) {
         input.style.borderColor = '#e05a3c';
+        input.style.boxShadow   = '0 0 0 3px rgba(224,90,60,0.15)';
         valid = false;
         input.addEventListener('input', () => {
           input.style.borderColor = '';
+          input.style.boxShadow   = '';
         }, { once: true });
       }
     });
-
     if (!valid) return;
 
-    // Simulate success (replace with real fetch/endpoint)
-    form.innerHTML = `
-      <div class="form-success">
-        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#C0614A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-          <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-        <h3>Poptávka odeslána!</h3>
-        <p>Díky, <strong>${name}</strong>! Ozveme se vám do 24 hodin na číslo ${phone}.</p>
-      </div>
-    `;
+    // ── Stav odesílání ──
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Odesílám…';
+
+    try {
+      const data = new FormData(form);
+      const res  = await fetch(form.action, {
+        method:  'POST',
+        body:    data,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (res.ok) {
+        // ── Úspěch ──
+        form.innerHTML = `
+          <div class="form-success">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#3A7D44" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <h3>Poptávka odeslána!</h3>
+            <p>Díky, <strong>${name}</strong>! Ozveme se vám do 24 hodin na číslo ${phone}.</p>
+          </div>`;
+      } else {
+        // ── Chyba ze serveru ──
+        const json = await res.json().catch(() => ({}));
+        throw new Error(json.error || 'Chyba serveru');
+      }
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Odeslat poptávku';
+      alert(`Formulář se nepodařilo odeslat: ${err.message}\n\nZkuste nás prosím kontaktovat telefonicky.`);
+    }
   });
 }
 
@@ -127,7 +150,7 @@ const navObserver = new IntersectionObserver(
       if (!link) return;
       if (entry.isIntersecting) {
         document.querySelectorAll('.nav-link').forEach(l => l.style.color = '');
-        link.style.color = '#C0614A';
+        link.style.color = '#3A7D44';
       }
     });
   },
